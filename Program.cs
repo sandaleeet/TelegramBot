@@ -9,58 +9,56 @@ namespace TelegramBOTS
     class Program
     {
         private const string Token = "1960934916:AAHlVrPiEd8WQBQQtRkp04gVTIqo-2ohedo";
-        private static TelegramBotClient client;
+        private static TelegramBotClient _client;
 
-        static void Main(string[] args)
+        static void Main()
         {
-            client = new TelegramBotClient(Token);
-            var me = client.GetMeAsync().Result;
-            client.OnMessage += OnMessageHandler;
-            client.StartReceiving();
-
-
+            _client = new TelegramBotClient(Token);
+            var me = _client.GetMeAsync().Result;
+            _client.OnMessage += OnMessageHandler;
+            _client.StartReceiving();
         }
 
         private static async void OnMessageHandler(object sender, MessageEventArgs e)
         {
-            var msg = e.Message;
+            var message = e.Message;
 
-            if (msg.Text != null)
+            if (message.Text != null)
             {
-                Console.WriteLine($"Пришло сообщение с текстом: {msg.Text}");
-                switch (msg.Text)
+                Console.WriteLine($"Пришло сообщение с текстом: {message.Text}");
+
+                switch (message.Text)
                 {
                     case "еще":
-                        await client.SendTextMessageAsync(
-                       chatId: msg.Chat.Id,
-                            text: "kek",
+                        await _client.SendTextMessageAsync(
+                       message.Chat.Id,
+                           "kek",
                             replyMarkup: GetButtons());
                         break;
 
                     case "Закончить":
-                        await client.SendTextMessageAsync(
-                            chatId: msg.Chat.Id,
+                        await _client.SendTextMessageAsync(
+                          message.Chat.Id,
                             text: "хочешь продолжить жми кнопку слева",
                             replyMarkup: GetButtons());
                         break;
 
                     default:
-                        await client.SendTextMessageAsync(msg.Chat.Id, "Я написал этого бота что бы он улучшал тебе настроение песенками", replyMarkup: GetButtons());
-                        await client.SendStickerAsync(msg.Chat.Id, sticker: "https://tlgrm.ru/_/stickers/5a7/cb3/5a7cb3d0-bca6-3459-a3f0-5745d95d54b7/4.webp");
+                        await _client.SendTextMessageAsync(message.Chat.Id, "Я написал этого бота что бы он улучшал тебе настроение песенками", replyMarkup: GetButtons());
+                        await _client.SendStickerAsync(message.Chat.Id, sticker: "https://tlgrm.ru/_/stickers/5a7/cb3/5a7cb3d0-bca6-3459-a3f0-5745d95d54b7/4.webp");
                         break;
                 }
             }
         }
-        private static IReplyMarkup GetButtons()
-        {
-            return new ReplyKeyboardMarkup
-            {
-                Keyboard = new List<List<KeyboardButton>>
+
+        private static IReplyMarkup GetButtons() =>
+             new ReplyKeyboardMarkup
+             {
+                 Keyboard = new List<List<KeyboardButton>>
                 {
-                    new List<KeyboardButton> { new KeyboardButton { Text = "еще" }, new KeyboardButton { Text = "Закончить" } },
+                    new List<KeyboardButton> { new KeyboardButton { Text = "еще" }, new KeyboardButton { Text = "Закончить" } }
                 },
-                ResizeKeyboard = true
-            };
-        }
+                 ResizeKeyboard = true
+             };
     }
 }
