@@ -23,8 +23,7 @@ namespace TelegramBOTS
         {
             var message = e.Message;
 
-            if (message.Text is null)
-                return;
+            if (message.Text is null) return;
 
             Console.WriteLine($"Пришло сообщение с текстом: {message.Text}");
 
