@@ -14,41 +14,42 @@ namespace TelegramBOTS
         static void Main()
         {
             _client = new TelegramBotClient(Token);
-            var me = _client.GetMeAsync().Result;
             _client.OnMessage += OnMessageHandler;
             _client.StartReceiving();
+            Console.ReadKey();
         }
 
         private static async void OnMessageHandler(object sender, MessageEventArgs e)
         {
             var message = e.Message;
 
-            if (message.Text != null)
+            if (message.Text is null)
+                return;
+
+            Console.WriteLine($"Пришло сообщение с текстом: {message.Text}");
+
+            switch (message.Text)
             {
-                Console.WriteLine($"Пришло сообщение с текстом: {message.Text}");
+                case "еще":
+                    await _client.SendTextMessageAsync(
+                   message.Chat.Id,
+                       "kek",
+                        replyMarkup: GetButtons());
+                    break;
 
-                switch (message.Text)
-                {
-                    case "еще":
-                        await _client.SendTextMessageAsync(
-                       message.Chat.Id,
-                           "kek",
-                            replyMarkup: GetButtons());
-                        break;
+                case "Закончить":
+                    await _client.SendTextMessageAsync(
+                      message.Chat.Id,
+                       "хочешь продолжить жми кнопку слева",
+                        replyMarkup: GetButtons());
+                    break;
 
-                    case "Закончить":
-                        await _client.SendTextMessageAsync(
-                          message.Chat.Id,
-                            text: "хочешь продолжить жми кнопку слева",
-                            replyMarkup: GetButtons());
-                        break;
-
-                    default:
-                        await _client.SendTextMessageAsync(message.Chat.Id, "Я написал этого бота что бы он улучшал тебе настроение песенками", replyMarkup: GetButtons());
-                        await _client.SendStickerAsync(message.Chat.Id, sticker: "https://tlgrm.ru/_/stickers/5a7/cb3/5a7cb3d0-bca6-3459-a3f0-5745d95d54b7/4.webp");
-                        break;
-                }
+                default:
+                    await _client.SendTextMessageAsync(message.Chat.Id, "Я написал этого бота что бы он улучшал тебе настроение песенками", replyMarkup: GetButtons());
+                    await _client.SendStickerAsync(message.Chat.Id, sticker: "https://tlgrm.ru/_/stickers/5a7/cb3/5a7cb3d0-bca6-3459-a3f0-5745d95d54b7/4.webp");
+                    break;
             }
+
         }
 
         private static IReplyMarkup GetButtons() =>
